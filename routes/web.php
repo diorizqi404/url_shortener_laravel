@@ -30,9 +30,13 @@ Route::get('/login', function () {
 Auth::routes();
 
 Route::get('/', [HomeController::class, 'index'])->name('landing');
-Route::get('/dashboard', [LinksController::class, 'index'])->name('dashboard');
-Route::post('/generate', [LinksController::class, 'store'])->name('generate-url');
-Route::put('/edit_url', [LinksController::class, 'update'])->name('edit-url');
-Route::delete('/delete_url', [LinksController::class, 'destroy'])->name('delete-url');
-Route::put('/change_password', [LinksController::class, 'changePassword'])->name('change-password');
-Route::get('{shortened_url}', [LinksController::class, 'shortenedUrl'])->name('shortened-url');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [LinksController::class, 'index'])->name('dashboard');
+    Route::post('/generate', [LinksController::class, 'store'])->name('generate-url');
+    Route::put('/edit_url', [LinksController::class, 'update'])->name('edit-url');
+    Route::delete('/delete_url', [LinksController::class, 'destroy'])->name('delete-url');
+    Route::put('/change_password', [LinksController::class, 'changePassword'])->name('change-password');
+});
+
+Route::get('/{shortened_url}', [LinksController::class, 'shortenedUrl'])->name('shortened-url');
