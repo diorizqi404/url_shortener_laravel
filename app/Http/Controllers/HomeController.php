@@ -22,7 +22,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        $namaDomain = "127.0.0.1:8000";
+        $namaDomain = env('APP_URL');
         return view('layouts.landing')->with('domain', $namaDomain);
     }
 }

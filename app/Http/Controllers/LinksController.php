@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Links; 
+use App\Models\Links;
 use App\Models\User;
 use Laravel\Ui\Presets\React;
 use Illuminate\Support\Facades\Hash;
@@ -22,7 +22,7 @@ class LinksController extends Controller
      */
     public function index()
     {
-        $namaDomain = "http://127.0.0.1:8000";
+        $namaDomain = env('APP_URL');
         $page = 5;
         $user_logged = auth()->id();
         $urls = Links::where('user_id', $user_logged)->paginate($page);
