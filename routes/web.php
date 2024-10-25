@@ -40,3 +40,5 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::get('/{shortened_url}', [LinksController::class, 'shortenedUrl'])->name('shortened-url');
+
+Route::post('/update-user-status', [LinksController::class, 'updateStatus']);

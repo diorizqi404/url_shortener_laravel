@@ -35,6 +35,14 @@ class LinksController extends Controller
         ->with('totalUrl', $totalUrl);
     }
 
+    public function updateStatus(Request $request)
+    {
+        $user = auth()->user();
+        User::where('id', $user->id)->update(['is_new' => false]);
+
+        return response()->json(['success' => true]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */

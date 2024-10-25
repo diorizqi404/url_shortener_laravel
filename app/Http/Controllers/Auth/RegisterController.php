@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Model;
+use App\Http\Controllers\LinksController;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Foundation\Auth\RegistersUsers;
 
 class RegisterController extends Controller
 {
@@ -23,6 +27,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+    protected $LinksController;
 
     /**
      * Where to redirect users after registration.
@@ -31,8 +36,9 @@ class RegisterController extends Controller
      */
     protected $redirectTo = '/dashboard';
 
-    public function showRegist(){
-        if(Auth::check()){
+    public function showRegist()
+    {
+        if (Auth::check()) {
             return redirect('/dashboard');
         }
         return view('auth.register');
@@ -43,9 +49,10 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(LinksController $linksController)
     {
         $this->middleware('guest');
+        $this->LinksController = $linksController;
     }
 
     /**
@@ -71,10 +78,29 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'is_new' => true, // Set default value to true
         ]);
+
+        Auth::login($user);
+
+        $short_random = Str::random(6);
+
+        $urlData = [
+            'original_url' => 'https://laravel.com',
+            'shortened_url' => $short_random,
+        ];
+
+        $request = new Request($urlData);
+        $request->setUserResolver(function () use ($user) {
+            return $user;
+        });
+
+        $this->LinksController->store($request);
+
+        return $user;
     }
 }
